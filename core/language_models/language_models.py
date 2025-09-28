@@ -83,7 +83,7 @@ class WebApiLanguageModel(BaseLanguageModel):
             },
             json={
                 "model": self.model,
-                "messages": [{"role": "user", "content": prompt + '/no_think'}],
+                "messages": [{"role": "user", "content": prompt}],
             }
         )
         response.raise_for_status()
