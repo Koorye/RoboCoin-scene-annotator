@@ -8,6 +8,12 @@ python scripts/generate.py \
     --json_dir="results/annotations/" \
     --save_dir="results/annotations_refined/"
     
+python scripts/generate.py \
+    --language_model.type="webapi" \
+    --language_model.model="free:Qwen3-30B-A3B" \
+    --prompt="You are a professional annotator, please provide a concise and clear summary in one sentence, describing the position and relationship of each object. Do not add any extra information! Here are the objects:\n" \
+    --json_dir="results/annotations/" \
+    --save_dir="results/annotations_refined/"
 """
 
 import draccus

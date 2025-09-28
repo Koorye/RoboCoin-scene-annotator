@@ -4,6 +4,7 @@ from .configuration_language_models import (
     BaseLanguageModelConfig,
     LanguageModelConfig,
     OllamaLanguageModelConfig,
+    WebApiLanguageModelConfig,
 )
 
 
@@ -41,8 +42,7 @@ class OllamaLanguageModel(BaseLanguageModel):
         config: BaseLanguageModelConfig,
     ):
         super().__init__(config=config)
-        import ollama
-        self.ollama = ollama
+        self.config = config
     
     def _load_model(self):
         return self.config.model
@@ -57,8 +57,43 @@ class OllamaLanguageModel(BaseLanguageModel):
         )['message']['content']
 
 
+class WebApiLanguageModel(BaseLanguageModel):
+
+    config_class = BaseLanguageModelConfig
+    name = "webapi"
+
+    def __init__(
+        self,
+        config: BaseLanguageModelConfig,
+    ):
+        super().__init__(config=config)
+        self.config = config
+    
+    def _load_model(self):
+        return self.config.model
+
+    def _generate(self, prompt: str, **kwargs) -> str:
+        import requests
+
+        response = requests.post(
+            self.config.api_url,
+            headers={
+                "Authorization": f"Bearer {self.config.api_key}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "model": self.model,
+                "messages": [{"role": "user", "content": prompt + '/no_think'}],
+            }
+        )
+        response.raise_for_status()
+        return response.json()['choices'][0]['message']['content'].split('</think>')[-1].strip()
+
+
 def get_language_model(config: LanguageModelConfig) -> BaseLanguageModel:
     if isinstance(config, OllamaLanguageModelConfig):
         return OllamaLanguageModel(config)
+    elif isinstance(config, WebApiLanguageModelConfig):
+        return WebApiLanguageModel(config)
     else:
         raise ValueError(f"Unknown language model type: {config.name}")
