@@ -1,13 +1,40 @@
 """
 python scripts/extract_first_frame.py \
-    --video_dir="path/to/lerobot/video/dir/" \
-    --save_dir="results/frames/"
+    --repo_dir="/home/koorye/.cache/huggingface/lerobot/unitree_g1_food_storage" \
+    --camera="observation.images.cam_high_rgb" \
+    --save_dir="results/frames"
 """
 
-import argparse
+import draccus
 import imageio
+import math
+import matplotlib.pyplot as plt
 import os
+from dataclasses import dataclass
 from tqdm import tqdm
+
+from utils import (
+    ensure_dir,
+    get_filename_without_suffix,
+)
+
+
+@dataclass
+class ExtractConfig:
+    repo_dir: str
+    camera: str = "observation.images.cam_high_rgb"
+    save_dir: str = "first_frames"
+
+
+def find_all_videos(dir_path, camera):
+    paths = []
+    for root, dirnames, filenames in os.walk(dir_path):
+        if camera in root:
+            for filename in filenames:
+                if filename.lower().endswith(('.mp4', '.avi', '.mov', '.mkv')):
+                    paths.append(os.path.join(root, filename))
+    paths.sort()
+    return paths
 
 
 def extract_first_frame(video_path, save_path):
@@ -15,30 +42,33 @@ def extract_first_frame(video_path, save_path):
     first_frame = reader.get_data(0)
     reader.close()
     imageio.imwrite(save_path, first_frame)
+    return first_frame
 
 
-def get_filename(path):
-    return os.path.splitext(os.path.basename(path))[0] + ".png"
+def show_frames(frames):
+    width, height = math.ceil(math.sqrt(len(frames))), math.ceil(math.sqrt(len(frames)))
+    fig, axs = plt.subplots(height, width, figsize=(width, height))
+    for i, frame in enumerate(frames):
+        ax = axs[i // width, i % width]
+        ax.imshow(frame)
+        ax.axis('off')
+    for i in range(len(frames), width * height):
+        axs[i // width, i % width].axis('off')
+    plt.tight_layout()
+    plt.show()
 
 
-def main(args):
-    assert (args.video_path is None) != (args.video_dir is None), "Either video_path or video_dir must be provided, but not both."
-
-    os.makedirs(args.save_dir, exist_ok=True)
-    if args.video_path:
-        extract_first_frame(args.video_path, os.path.join(args.save_dir, get_filename(args.video_path)))
-    elif args.video_dir:
-        video_files = [f for f in os.listdir(args.video_dir) if f.lower().endswith(('.mp4', '.avi', '.mov', '.mkv'))]
-        for video_file in tqdm(video_files, desc="Extracting first frames"):
-            video_path = os.path.join(args.video_dir, video_file)
-            save_path = os.path.join(args.save_dir, get_filename(video_file))
-            extract_first_frame(video_path, save_path)
+@draccus.wrap()
+def main(config: ExtractConfig):
+    os.makedirs(config.save_dir, exist_ok=True)
+    frames = []
+    video_paths = find_all_videos(config.repo_dir, config.camera)
+    for video_path in tqdm(video_paths, desc="Extracting first frames"):
+        save_path = os.path.join(config.save_dir, get_filename_without_suffix(config.repo_dir), get_filename_without_suffix(video_path) + ".png")
+        ensure_dir(save_path)
+        frames.append(extract_first_frame(video_path, save_path))
+    show_frames(frames)
         
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Extract first frames from videos in a directory.")
-    parser.add_argument("--video_path", type=str, help="Path to a single video file.")
-    parser.add_argument("--video_dir", type=str, help="Path to the directory containing video files.")
-    parser.add_argument("--save_dir", type=str, default="first_frames", help="Directory to save the extracted first frames.")
-    args = parser.parse_args()
-    main(args)
+    main()

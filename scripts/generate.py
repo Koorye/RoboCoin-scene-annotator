@@ -5,13 +5,17 @@ python scripts/generate.py \
     --language_model.model="deepseek-r1:8b" \
     --language_model.think=False \
     --prompt="You are a professional annotator, please provide a concise and clear summary in one sentence, describing the position and relationship of each object. Do not add any extra information! Here are the objects:\n" \
+    --repo_id "unitree_g1_food_storage" \
     --json_dir="results/annotations/" \
     --save_dir="results/annotations_refined/"
     
 python scripts/generate.py \
     --language_model.type="webapi" \
     --language_model.model="free:Qwen3-30B-A3B" \
+    --language_model.api_url="https://api.suanli.cn/v1/chat/completions" \
+    --language_model.api_key="sk-vPTMzbUSQzG6jJiE0QQNENu2f7zwcD8m6FGr8GDTD4Vqy1Dw" \
     --prompt="You are a professional annotator, please provide a concise and clear summary in one sentence, describing the position and relationship of each object. Do not add any extra information! Here are the objects:\n" \
+    --repo_id "unitree_g1_food_storage" \
     --json_dir="results/annotations/" \
     --save_dir="results/annotations_refined/"
 """
@@ -21,7 +25,7 @@ import json
 import os
 import sys
 from dataclasses import dataclass
-from typing import Optional
+from tqdm import tqdm
 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -30,19 +34,18 @@ from core.language_models import (
     OllamaLanguageModelConfig,
     get_language_model,
 )
+from utils import(
+    ensure_dir
+)
 
 
 @dataclass
 class GenerationConfig:
     language_model: LanguageModelConfig
     prompt: str
-    json_path: Optional[str] = None
-    json_dir: Optional[str] = None
+    repo_id: str = ""
+    json_dir: str = "annotations/"
     save_dir: str = "annotations_refined/"
-
-    def __post_init__(self):
-        if (self.json_path is None) == (self.json_dir is None):
-            raise ValueError("Either json_path or json_dir must be provided, but not both.")
 
 
 def parse_json(json_path):
@@ -61,29 +64,19 @@ def parse_json(json_path):
 def main(config: GenerationConfig):
     language_model = get_language_model(config.language_model)
 
-    os.makedirs(config.save_dir, exist_ok=True)
-
-    if config.json_path:
-        data, prompt = parse_json(config.json_path)
+    json_files = [f for f in os.listdir(os.path.join(config.json_dir, config.repo_id))
+                  if f.lower().endswith('.json')]
+    json_files.sort()
+    for json_file in tqdm(json_files, desc="Processing JSON files"):
+        json_path = os.path.join(config.json_dir, config.repo_id, json_file)
+        data, prompt = parse_json(json_path)
         prompt = config.prompt + prompt
         response = language_model.generate(prompt)
         data['description'] = response
-        save_path = os.path.join(config.save_dir, os.path.basename(config.json_path))
+        save_path = os.path.join(config.save_dir, config.repo_id, json_file)
+        ensure_dir(save_path)
         with open(save_path, 'w') as f:
             json.dump(data, f, indent=2)
-
-    elif config.json_dir:
-        json_files = [f for f in os.listdir(config.json_dir) if f.lower().endswith('.json')]
-        json_files.sort()
-        for json_file in json_files:
-            json_path = os.path.join(config.json_dir, json_file)
-            data, prompt = parse_json(json_path)
-            prompt = config.prompt + prompt
-            response = language_model.generate(prompt)
-            data['description'] = response
-            save_path = os.path.join(config.save_dir, json_file)
-            with open(save_path, 'w') as f:
-                json.dump(data, f, indent=2)
 
 
 if __name__ == '__main__':

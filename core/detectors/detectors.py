@@ -23,19 +23,21 @@ class BaseDetector(ABC):
     ):
         self.config = config
         self.model = self._load_model()
+        self._count = 0
 
     @abstractmethod
     def _load_model(self):
         pass
 
     @abstractmethod
-    def _detect(self, image, prompt, **kwargs) -> DetectionResult:
+    def _detect(self, image, prompt) -> DetectionResult:
         pass
 
-    def detect(self, image, prompt, **kwargs) -> DetectionResult:
-        result = self._detect(image, prompt, **kwargs)
-        if self.config.visualize:
+    def detect(self, image, prompt) -> DetectionResult:
+        result = self._detect(image, prompt)
+        if self._count < self.config.visualize_first:
             result.visualize()
+        self._count += 1
         return result
 
 

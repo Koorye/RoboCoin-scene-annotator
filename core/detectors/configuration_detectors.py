@@ -10,7 +10,6 @@ class DetectorConfig(draccus.ChoiceRegistry):
 @DetectorConfig.register_subclass("base_detector")
 @dataclass
 class BaseDetectorConfig(draccus.ChoiceRegistry):
-    visualize: bool = False
     visualize_first: int = 0
 
 
