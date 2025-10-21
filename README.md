@@ -1,70 +1,72 @@
-# RoboCoin Scene Annotator：机器人场景自动标注工具
+# RoboCoin Scene Annotator
 
-本文档介绍了 RoboCoin Scene Annotator，一个基于开放词汇目标检测器和大语言模型的机器人场景标注自动化生成工具。
+[English](README.md) | [中文](README_CN.md)
 
-## 工具概述
+RoboCoin Scene Annotator, an automated robot scene annotation generation tool based on open-vocabulary object detectors and large language models.
 
-RoboCoin Scene Annotator 采用一体化检测与描述流程：
+## Tool Overview
+
+RoboCoin Scene Annotator adopts an integrated detection and description pipeline:
 ```mermaid
 graph LR;
-    A[视频] --提取--> B[初始帧]
-    B --Grounding DINO--> C[目标检测框及标签]
-    C --语言模型--> D[场景描述]
+A[Video] --Extract--> B[Initial Frame]
+B --Grounding DINO--> C[Object Detection Boxes & Labels]
+C --Language Model--> D[Scene Description]
 ```
 
-核心特性：
-- 开放词汇检测能力，无需预定义类别
-- 灵活的语言模型集成，支持本地和API模式
-- 自动化场景描述生成
-- 可视化标注结果
+Core Features:
+- Open-vocabulary detection capability, no predefined categories required
+- Flexible language model integration, supporting local and API modes
+- Automated scene description generation
+- Visualized annotation results
 
-## 安装指南
+## Installation Guide
 
-前提要求：
-- GPU：至少12GB显存（推荐用于大型模型）
-- 网络：可访问HuggingFace以下载预训练模型
+Prerequisites:
+- GPU: At least 12GB VRAM (recommended for large models)
+- Network: Access to HuggingFace for downloading pre-trained models
 
-安装步骤
+Installation Steps
 
-1. 下载仓库
+1. Download repository
    ```bash
    git clone --recursive https://github.com/Koorye/RoboCoin-scene-annotator.git
    ```
 
-2. 安装Grounding DINO
+2. Install Grounding DINO
 
-   参考[Grounding DINO官方仓库](https://github.com/IDEA-Research/GroundingDINO)：
-   
-   安装PyTorch（建议使用torch 2.5.1）
+   Refer to [Grounding DINO official repository](Link2):
+
+   Install PyTorch (recommended torch 2.5.1)
+   ```bash
+   pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 --index-url Link3
    ```
-   pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu124
-   ```
-   
-   安装Grounding DINO仓库
-    ```bash
+
+   Install Grounding DINO repository
+   ```bash
    cd third_party/GroundingDINO
    pip install -e .
    cd ..
    ```
-   
-   下载预训练权重
+
+   Download pre-trained weights
    ```bash
    mkdir weights
    cd weights
-   wget -q https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha/groundingdino_swint_ogc.pth
+   wget -q Link2/releases/download/v0.1.0-alpha/groundingdino_swint_ogc.pth
    cd ..
    ```
-   
-3. 安装Ollama（可选，用于本地运行语言模型）
-   
-   参考[Ollama官方仓库](https://github.com/ollama/ollama)
-   
-   Linux标准安装：
+
+3. Install Ollama (optional, for running language models locally)
+
+   Refer to [Ollama official repository](Link4)
+
+   Linux standard installation (root ):
    ```bash
    curl -fsSL https://ollama.com/install.sh | sh
    ```
-   
-   Linux无root安装：
+
+   Linux manual installation:
    ```bash
    curl -L https://ollama.com/download/ollama-linux-amd64.tgz -o ollama-linux-amd64.tgz
    mkdir -p ~/.local
@@ -74,42 +76,40 @@ graph LR;
    ollama serve
    ```
 
-4. 安装其他依赖
-   ```bash
-   pip install -r requirements.txt
-   ```
-   
+4. Install other dependencies
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-## 使用说明
+## Usage
 
-运行主程序：
+Run main program:
+```bash
+python scripts/run_pipeline.py [parameters]
 ```
-python scripts/run_pipeline.py [参数选项]
-```
 
-参数详解
+Parameter Details
 
-参数类别 | 参数名称 | 类型 | 描述
+Parameter Category | Parameter Name | Type | Description
 --- | --- | --- | ---
-基本参数 | --repo_id | str | 仓库标识符 
-| | --repo_root | str | 仓库根路径
-| | --save_root | str | 保存结果根路径
-| | --camera | str | 相机键名
-检测器配置 | --detector.type | str | 检测器类型 
-||--detector.visualize_first | int | 可视化帧数量，前几帧检测结果将绘制以供人工检查 
-||--detector.model_config_path | str | 模型配置文件路径
-||--detector.model_checkpoint | str | 模型权重路径 
-||--detector.device | str | 运行设备 
-||--detector.box_threshold | float | 检测框阈值 
-||--detector.text_threshold | float | 文本阈值 
-语言模型配置 | --language_model.type | str | 语言模型类型
-| | --language_model.think | bool | 是否使用思考模式 
-| | --language_model.api_url | str | API接口地址，仅限API模式
-| | --language_model.api_key | str | API密钥，仅限API模式
-| | --language_model.model | str | 模型名称 
+Basic Parameters | --repo_id | str | Repository identifier 
+| | --repo_root | str | Repository root path
+| | --save_root | str | Results save root path
+| | --camera | str | Camera key name
+Detector Configuration | --detector.type | str | Detector type 
+||--detector.visualize_first | int | Number of frames to visualize, detection results of first few frames will be drawn for manual inspection 
+||--detector.model_config_path | str | Model configuration file path
+||--detector.model_checkpoint | str | Model weights path 
+||--detector.device | str | Running device 
+||--detector.box_threshold | float | Detection box threshold 
+||--detector.text_threshold | float | Text threshold 
+Language Model Configuration | --language_model.type | str | Language model type
+| | --language_model.think | bool | Whether to use thinking mode 
+| | --language_model.api_url | str | API endpoint URL, API mode only
+| | --language_model.api_key | str | API key, API mode only
+| | --language_model.model | str | Model name 
 
-使用示例：
-
+Usage Example:
 ```bash
 python scripts/run_pipeline.py \
     --repo_id example_repo \
@@ -127,9 +127,9 @@ python scripts/run_pipeline.py \
     --language_model.think False
 ```
 
-## 致谢
+## Acknowledgments
 
-感谢以下优秀项目的支持：
-- https://github.com/IDEA-Research/GroundingDINO：先进的开放词汇目标检测器
-- https://github.com/ollama/ollama：本地大语言模型部署框架
-- 其他为计算机视觉和人工智能领域做出贡献的开源项目
+Thanks to the support of the following excellent projects:
+- https://github.com/IDEA-Research/GroundingDINO: Advanced open-vocabulary object detector
+- https://github.com/ollama/ollama: Local large language model deployment framework
+- Other open-source projects contributing to the computer vision and artificial intelligence fields
