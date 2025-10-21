@@ -23,7 +23,7 @@ Core Features:
 ## Installation Guide
 
 Prerequisites:
-- GPU: At least 12GB VRAM (recommended for large models)
+- GPU: At least 12GB VRAM recommended
 - Network: Access to HuggingFace for downloading pre-trained models
 
 Installation Steps
