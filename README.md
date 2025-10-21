@@ -89,24 +89,24 @@ python scripts/run_pipeline.py [参数选项]
 
 参数详解
 
-参数类别 | 参数名称 | 类型 | 描述 | 示例
---- | --- | --- | --- | ---
-基本参数 | --repo_id | str | 仓库标识符 | lerobot/do_something
-| | --repo_root | str | 仓库根路径 | /home/user/.cache/huggingface/lerobot
-| | --save_root | str | 保存结果根路径 | results/ 
-| | --camera | str | 相机键名 | observation.top
-检测器配置 | --detector.type | str | 检测器类型 | 仅支持grounding_dino
-||--detector.visualize_first | int | 可视化帧数量，前几帧检测结果将绘制以供人工检查 | 5
-||--detector.model_config_path | str |模型配置文件路径 | configs/grounding_dino/GroundingDINO_SwinT_OGC.py
-||--detector.model_checkpoint | str |模型权重路径 | weights/groundingdino_swint_ogc.pth
-||--detector.device | str | 运行设备 | cpu或cuda:0
-||--detector.box_threshold | float | 检测框阈值 | 0.3
-||--detector.text_threshold | float | 文本阈值 | 0.3
-语言模型配置 | --language_model.type | str | 语言模型类型 | 支持ollama或webapi
-| | --language_model.think | bool | 是否使用思考模式 | True或False
-| | --language_model.api_url | str | API接口地址 | WebAPI模式使用，如https://api.openai.com/v1/chat/completions
-| | --language_model.api_key | str | API密钥 | WebAPI模式使用，如sk-xxxxxx
-| | --language_model.model | str | 模型名称 | deepseek-r1:13b
+参数类别 | 参数名称 | 类型 | 描述
+--- | --- | --- | ---
+基本参数 | --repo_id | str | 仓库标识符 
+| | --repo_root | str | 仓库根路径
+| | --save_root | str | 保存结果根路径
+| | --camera | str | 相机键名
+检测器配置 | --detector.type | str | 检测器类型 
+||--detector.visualize_first | int | 可视化帧数量，前几帧检测结果将绘制以供人工检查 
+||--detector.model_config_path | str | 模型配置文件路径
+||--detector.model_checkpoint | str | 模型权重路径 
+||--detector.device | str | 运行设备 
+||--detector.box_threshold | float | 检测框阈值 
+||--detector.text_threshold | float | 文本阈值 
+语言模型配置 | --language_model.type | str | 语言模型类型
+| | --language_model.think | bool | 是否使用思考模式 
+| | --language_model.api_url | str | API接口地址，仅限API模式
+| | --language_model.api_key | str | API密钥，仅限API模式
+| | --language_model.model | str | 模型名称 
 
 使用示例：
 
@@ -117,6 +117,9 @@ python scripts/run_pipeline.py \
     --save_root results/ \
     --camera observation.front \
     --detector.type grounding_dino \
+    --detector.model_config_path configs/grounding_dino/GroundingDINO_SwinT_OGC.py \
+    --detector.model_checkpoint weights/groundingdino_swint_ogc.pth \
+    --detector.device cuda:0 \
     --detector.box_threshold 0.3 \
     --detector.text_threshold 0.3 \
     --language_model.type ollama \
