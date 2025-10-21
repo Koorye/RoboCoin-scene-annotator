@@ -293,6 +293,6 @@ Example: `results/annotations_refined/unitree_g1_food_storage/episode_000000.jso
 ## Acknowledgments
 
 Thanks to the support of the following excellent projects:
-- https://github.com/IDEA-Research/GroundingDINO: Advanced open-vocabulary object detector
-- https://github.com/ollama/ollama: Local large language model deployment framework
+- [Grounding DINO](https://github.com/IDEA-Research/GroundingDINO): Advanced open-vocabulary object detector
+- [Ollama](https://github.com/ollama/ollama): Local large language model deployment framework
 - Other open-source projects contributing to the computer vision and artificial intelligence fields

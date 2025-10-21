@@ -295,6 +295,6 @@ python scripts/run_pipeline.py \
 ## 致谢
 
 感谢以下优秀项目的支持：
-- https://github.com/IDEA-Research/GroundingDINO：先进的开放词汇目标检测器
-- https://github.com/ollama/ollama：本地大语言模型部署框架
-- 其他为计算机视觉和人工智能领域做出贡献的开源项目
+- [Grounding DINO](https://github.com/IDEA-Research/GroundingDINO)：开放词汇目标检测器
+- [Ollama](https://github.com/ollama/ollama)：本地大语言模型部署框架
+- 其他为计算机视觉和人工智能做出贡献的开源项目
