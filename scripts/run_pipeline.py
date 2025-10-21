@@ -14,6 +14,7 @@ python scripts/run_pipeline.py \
 """
 
 import draccus
+import ollama
 import os
 import sys
 from dataclasses import dataclass
