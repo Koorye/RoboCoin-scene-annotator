@@ -1,6 +1,6 @@
 # RoboCoin Scene Annotator
 
-[English](README.md) | [中文](README_CN.md)
+[English](README.md) | [中文](README_zh-CN.md)
 
 RoboCoin Scene Annotator, an automated robot scene annotation generation tool based on open-vocabulary object detectors and large language models.
 
