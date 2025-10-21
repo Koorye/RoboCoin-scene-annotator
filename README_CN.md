@@ -129,6 +129,169 @@ python scripts/run_pipeline.py \
     --language_model.think False
 ```
 
+### 详细流程
+
+该程序将启动场景标注流程，处理指定仓库的视频数据，并将生成的标注结果保存到指定路径。
+
+1. Prompt提取：从任务描述中提取物体列表，生成检测提示词，结果保存在`<save_root>/prompts/<repo_id>.txt`文件中。
+   示例：`results/prompts/unitree_g1_food_storage.txt`
+   ```
+   basket . white bowl . cake . donut . white plate .
+   ```
+
+2. 初始帧提取：从视频中提取初始帧，并可视化检测结果以供检查，结果将保存在`<save_root>/frames/<repo_id>/`目录下。
+   示例输出：
+   ![](examples/first_frames.png)
+
+3. 目标检测：使用Grounding DINO进行目标检测，结果将保存在`<save_root>/annotations/<repo_id>/`目录下。
+   示例：`results/annotations/unitree_g1_food_storage/episode_000000.json`
+   ```json
+      {
+     "object": [
+       {
+         "name": "basket",
+         "box": {
+           "x_center": 0.5401855111122131,
+           "y_center": 0.43615126609802246,
+           "width": 0.47688308358192444,
+           "height": 0.3583659827709198
+         },
+         "logit": 0.7744243144989014,
+         "info": {
+           "position": "center"
+         }
+       },
+       {
+         "name": "white bowl white plate",
+         "box": {
+           "x_center": 0.21382831037044525,
+           "y_center": 0.7187483310699463,
+           "width": 0.38848257064819336,
+           "height": 0.41331198811531067
+         },
+         "logit": 0.41868603229522705,
+         "info": {
+           "position": "back left"
+         }
+       },
+       {
+         "name": "donut",
+         "box": {
+           "x_center": 0.19377967715263367,
+           "y_center": 0.7328643202781677,
+           "width": 0.2978207468986511,
+           "height": 0.3233490288257599
+         },
+         "logit": 0.38621386885643005,
+         "info": {
+           "position": "back left"
+         }
+       },
+       {
+         "name": "white plate",
+         "box": {
+           "x_center": 0.8474635481834412,
+           "y_center": 0.8461897373199463,
+           "width": 0.3014012575149536,
+           "height": 0.30122512578964233
+         },
+         "logit": 0.30470189452171326,
+         "info": {
+           "position": "back right"
+         }
+       },
+       {
+         "name": "donut",
+         "box": {
+           "x_center": 0.2593638002872467,
+           "y_center": 0.6321070790290833,
+           "width": 0.16489802300930023,
+           "height": 0.12321418523788452
+         },
+         "logit": 0.33250319957733154,
+         "info": {
+           "position": "back left"
+         }
+       }
+     ]
+   }
+   ```
+
+4. 生成场景描述：基于检测结果生成场景描述，结果将保存在`<save_root>/annotations_refined/<repo_id>/`目录下。
+   示例：`results/annotations_refined/unitree_g1_food_storage/episode_000000.json`
+   ```json
+   {
+     "object": [
+       {
+         "name": "basket",
+         "box": {
+           "x_center": 0.5401855111122131,
+           "y_center": 0.43615126609802246,
+           "width": 0.47688308358192444,
+           "height": 0.3583659827709198
+         },
+         "logit": 0.7744243144989014,
+         "info": {
+           "position": "center"
+         }
+       },
+       {
+         "name": "white bowl white plate",
+         "box": {
+           "x_center": 0.21382831037044525,
+           "y_center": 0.7187483310699463,
+           "width": 0.38848257064819336,
+           "height": 0.41331198811531067
+         },
+         "logit": 0.41868603229522705,
+         "info": {
+           "position": "back left"
+         }
+       },
+       {
+         "name": "donut",
+         "box": {
+           "x_center": 0.19377967715263367,
+           "y_center": 0.7328643202781677,
+           "width": 0.2978207468986511,
+           "height": 0.3233490288257599
+         },
+         "logit": 0.38621386885643005,
+         "info": {
+           "position": "back left"
+         }
+       },
+       {
+         "name": "white plate",
+         "box": {
+           "x_center": 0.8474635481834412,
+           "y_center": 0.8461897373199463,
+           "width": 0.3014012575149536,
+           "height": 0.30122512578964233
+         },
+         "logit": 0.30470189452171326,
+         "info": {
+           "position": "back right"
+         }
+       },
+       {
+         "name": "donut",
+         "box": {
+           "x_center": 0.2593638002872467,
+           "y_center": 0.6321070790290833,
+           "width": 0.16489802300930023,
+           "height": 0.12321418523788452
+         },
+         "logit": 0.33250319957733154,
+         "info": {
+           "position": "back left"
+         }
+       }
+     ],
+     "description": "The basket is at the center. The white bowl and white plate (back left) contain the donut located there."
+   }
+   ```
+
 ## 致谢
 
 感谢以下优秀项目的支持：

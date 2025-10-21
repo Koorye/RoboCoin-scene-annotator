@@ -1,4 +1,6 @@
 """
+Generate scene prompts from task instructions using a language model.
+
 e.g.
 python scripts/generate.py \
     --language_model.type="ollama" \

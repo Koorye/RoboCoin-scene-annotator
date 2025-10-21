@@ -1,8 +1,6 @@
 import torch
 from abc import ABC, abstractmethod
 from PIL import Image
-from typing import List
-from tqdm import tqdm
 
 from .configuration_detectors import (
     BaseDetectorConfig, 

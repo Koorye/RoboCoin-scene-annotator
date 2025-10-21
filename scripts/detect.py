@@ -1,8 +1,10 @@
 """
+Detect objects in images using a specified detector and prompts.
+
 e.g.
 python scripts/detect.py \
     --detector.type="grounding_dino" \
-    --detector.device=cpu \
+    --detector.device=cuda:0 \
     --detector.visualize_first=5 \
     --repo_id "unitree_g1_food_storage" \
     --prompt_dir="results/prompts" \

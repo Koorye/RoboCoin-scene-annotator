@@ -16,13 +16,13 @@ class BaseLanguageModelConfig(LanguageModelConfig):
 @LanguageModelConfig.register_subclass("ollama")
 @dataclass
 class OllamaLanguageModelConfig(BaseLanguageModelConfig):
-    model: str = "deepseek-r1:8b"
+    model: str = "deepseek-r1:8b" # Ollama model name
     think: bool = False  # Whether to use "think" mode for more detailed responses
 
 
 @LanguageModelConfig.register_subclass("webapi")
 @dataclass
 class WebApiLanguageModelConfig(BaseLanguageModelConfig):
-    api_url: str = ""
-    api_key: str = ""
-    model: str = "free:Qwen3-30B-A3B"
+    api_url: str = "" # The URL of the web API endpoint
+    api_key: str = "" # The API key for authentication
+    model: str = "free:Qwen3-30B-A3B" # The model to use on the web API

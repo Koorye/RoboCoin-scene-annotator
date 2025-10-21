@@ -1,4 +1,7 @@
 """
+Extract the first frame from all videos in a specified repository directory and camera path,
+and save them as images in a designated save directory.
+
 python scripts/extract_first_frame.py \
     --repo_dir="/home/koorye/.cache/huggingface/lerobot/unitree_g1_food_storage" \
     --camera="observation.images.cam_high_rgb" \
@@ -60,13 +63,20 @@ def show_frames(frames):
 
 @draccus.wrap()
 def main(config: ExtractConfig):
-    os.makedirs(config.save_dir, exist_ok=True)
+    # os.makedirs(config.save_dir, exist_ok=True)
+    # frames = []
+    # video_paths = find_all_videos(config.repo_dir, config.camera)
+    # for video_path in tqdm(video_paths, desc="Extracting first frames"):
+    #     save_path = os.path.join(config.save_dir, get_filename_without_suffix(config.repo_dir), get_filename_without_suffix(video_path) + ".png")
+    #     ensure_dir(save_path)
+    #     frames.append(extract_first_frame(video_path, save_path))
     frames = []
-    video_paths = find_all_videos(config.repo_dir, config.camera)
-    for video_path in tqdm(video_paths, desc="Extracting first frames"):
-        save_path = os.path.join(config.save_dir, get_filename_without_suffix(config.repo_dir), get_filename_without_suffix(video_path) + ".png")
-        ensure_dir(save_path)
-        frames.append(extract_first_frame(video_path, save_path))
+    for filename in os.listdir('results/frames/unitree_g1_food_storage'):
+        if filename.endswith('.png'):
+            print(filename)
+            frame = imageio.imread(os.path.join('results/frames/unitree_g1_food_storage', filename))
+            print(frame.shape)
+            frames.append(frame)
     show_frames(frames)
         
 

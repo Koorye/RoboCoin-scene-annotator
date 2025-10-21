@@ -1,4 +1,10 @@
 """
+Main pipeline to run the full annotation process: 
+1. Prompt extraction: extract prompts from task instructions.
+2. Frame extraction: extract first frames from videos.
+3. Object detection: detect objects in frames using prompts.
+4. Scene generation: generate refined scene annotations from detected objects.
+
 e.g.
 python scripts/run_pipeline.py \
     --repo_root="/home/koorye/.cache/huggingface/lerobot/" \

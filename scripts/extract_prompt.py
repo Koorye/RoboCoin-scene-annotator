@@ -1,4 +1,6 @@
 """
+Extract object names from task instructions using a language model.
+
 e.g.
 python scripts/extract_prompt.py \
     --language_model.type="ollama" \

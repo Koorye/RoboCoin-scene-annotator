@@ -127,6 +127,169 @@ python scripts/run_pipeline.py \
     --language_model.think False
 ```
 
+### Detailed Process
+
+This program will initiate the scene annotation process, processing videos from the specified repository and saving the generated annotations to the designated path.
+
+1. Prompt Extraction: Extract object list from task description to generate detection prompts, results are saved in `<save_root>/prompts/<repo_id>.txt`.
+   Example: `results/prompts/unitree_g1_food_storage.txt`
+   ```
+   basket . white bowl . cake . donut . white plate .
+   ```
+
+2. **Initial Frame Extraction**: Extracts initial frames from videos and visualizes detection results for manual verification. Results are saved in `<save_root>/frames/<repo_id>/` directory.
+   Example output:
+   ![](examples/first_frames.png)
+
+3. **Object Detection**: Performs object detection using Grounding DINO. Results are saved in `<save_root>/annotations/<repo_id>/` directory.
+   Example: `results/annotations/unitree_g1_food_storage/episode_000000.json`
+   ```json
+      {
+     "object": [
+       {
+         "name": "basket",
+         "box": {
+           "x_center": 0.5401855111122131,
+           "y_center": 0.43615126609802246,
+           "width": 0.47688308358192444,
+           "height": 0.3583659827709198
+         },
+         "logit": 0.7744243144989014,
+         "info": {
+           "position": "center"
+         }
+       },
+       {
+         "name": "white bowl white plate",
+         "box": {
+           "x_center": 0.21382831037044525,
+           "y_center": 0.7187483310699463,
+           "width": 0.38848257064819336,
+           "height": 0.41331198811531067
+         },
+         "logit": 0.41868603229522705,
+         "info": {
+           "position": "back left"
+         }
+       },
+       {
+         "name": "donut",
+         "box": {
+           "x_center": 0.19377967715263367,
+           "y_center": 0.7328643202781677,
+           "width": 0.2978207468986511,
+           "height": 0.3233490288257599
+         },
+         "logit": 0.38621386885643005,
+         "info": {
+           "position": "back left"
+         }
+       },
+       {
+         "name": "white plate",
+         "box": {
+           "x_center": 0.8474635481834412,
+           "y_center": 0.8461897373199463,
+           "width": 0.3014012575149536,
+           "height": 0.30122512578964233
+         },
+         "logit": 0.30470189452171326,
+         "info": {
+           "position": "back right"
+         }
+       },
+       {
+         "name": "donut",
+         "box": {
+           "x_center": 0.2593638002872467,
+           "y_center": 0.6321070790290833,
+           "width": 0.16489802300930023,
+           "height": 0.12321418523788452
+         },
+         "logit": 0.33250319957733154,
+         "info": {
+           "position": "back left"
+         }
+       }
+     ]
+   }
+   ```
+
+4. **Scene Description Generation**: Generates scene descriptions based on detection results. Results are saved in `<save_root>/annotations_refined/<repo_id>/` directory.
+Example: `results/annotations_refined/unitree_g1_food_storage/episode_000000.json`
+   ```json
+   {
+     "object": [
+       {
+         "name": "basket",
+         "box": {
+           "x_center": 0.5401855111122131,
+           "y_center": 0.43615126609802246,
+           "width": 0.47688308358192444,
+           "height": 0.3583659827709198
+         },
+         "logit": 0.7744243144989014,
+         "info": {
+           "position": "center"
+         }
+       },
+       {
+         "name": "white bowl white plate",
+         "box": {
+           "x_center": 0.21382831037044525,
+           "y_center": 0.7187483310699463,
+           "width": 0.38848257064819336,
+           "height": 0.41331198811531067
+         },
+         "logit": 0.41868603229522705,
+         "info": {
+           "position": "back left"
+         }
+       },
+       {
+         "name": "donut",
+         "box": {
+           "x_center": 0.19377967715263367,
+           "y_center": 0.7328643202781677,
+           "width": 0.2978207468986511,
+           "height": 0.3233490288257599
+         },
+         "logit": 0.38621386885643005,
+         "info": {
+           "position": "back left"
+         }
+       },
+       {
+         "name": "white plate",
+         "box": {
+           "x_center": 0.8474635481834412,
+           "y_center": 0.8461897373199463,
+           "width": 0.3014012575149536,
+           "height": 0.30122512578964233
+         },
+         "logit": 0.30470189452171326,
+         "info": {
+           "position": "back right"
+         }
+       },
+       {
+         "name": "donut",
+         "box": {
+           "x_center": 0.2593638002872467,
+           "y_center": 0.6321070790290833,
+           "width": 0.16489802300930023,
+           "height": 0.12321418523788452
+         },
+         "logit": 0.33250319957733154,
+         "info": {
+           "position": "back left"
+         }
+       }
+     ],
+     "description": "The basket is at the center. The white bowl and white plate (back left) contain the donut located there."
+   }
+   ```
+
 ## Acknowledgments
 
 Thanks to the support of the following excellent projects:
